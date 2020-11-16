@@ -51,12 +51,23 @@ def pretty_print_board(board: np.ndarray) -> str:
     |0 1 2 3 4 5 6 |
     """
 
-    prettyBoard = "\n[=============]\n[0 1 2 3 4 5 6]"
-    for row in board:
-        prettyBoard = "\n" + str(row) + prettyBoard
+    line = "|==============|"
+    column_line = "|0 1 2 3 4 5 6 |"
+    pretty_board = "\n" + line
+    for j in range(5, -1, -1):
+        pretty_board = pretty_board + "\n|"
+        for i in range(7):
+            if board[j, i] == NO_PLAYER:
+                pretty_board = pretty_board + "  "
+            elif board[j, i] == PLAYER1:
+                pretty_board = pretty_board + "X "
+            elif board[j, i] == PLAYER2:
+                pretty_board = pretty_board + "O "
+        pretty_board = pretty_board + "|"
 
-    prettyBoard = "[=============]" + prettyBoard
-    return prettyBoard
+    pretty_board = pretty_board + "\n" + line + "\n" + column_line
+    #print(pretty_board)
+    return pretty_board
 
 
 def string_to_board(pp_board: str) -> np.ndarray:
