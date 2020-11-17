@@ -1,4 +1,5 @@
 # PyCharm project settings
 .idea/
+__pycache__
 # Mac folder attributes file
 .DS_Store
