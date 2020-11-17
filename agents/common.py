@@ -141,15 +141,11 @@ def connected_four(
         listOfRowsAndCols.append(np.diag(flippedBoard, (-x - 1)))
     listOfRowsAndCols.append(board[:, 6])
 
-    print(listOfRowsAndCols)
-
     for rowList in listOfRowsAndCols:
         for col in rowList:
             if col == player:
                 lengthOfStreak += 1
                 if lengthOfStreak > 3:
-                    print('got a winner in List: ' + str(rowList) + ' and player : ' + str(player))
-                    print(lengthOfStreak)
                     return True
             else:
                 lengthOfStreak = 0
