@@ -90,10 +90,7 @@ def string_to_board(pp_board: str) -> np.ndarray:
                     tempRowList[0].append(1)
                 else:
                     tempRowList[0].append(0)
-                print(tempRowList[0])
-                print('Board: ' + str(board))
 
-        print(board.shape)
         board = np.append(board, np.array(tempRowList), axis=0)
 
     return np.flip(board, axis=0)
