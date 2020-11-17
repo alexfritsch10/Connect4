@@ -3,6 +3,7 @@ from agents.common import BoardPiece, PlayerAction, SavedState
 from typing import Optional, Tuple
 import random
 
+
 def generate_move_random(
     board: np.ndarray, player: BoardPiece, saved_state: Optional[SavedState]
 ) -> Tuple[PlayerAction, Optional[SavedState]]:
