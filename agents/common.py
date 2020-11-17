@@ -76,15 +76,27 @@ def string_to_board(pp_board: str) -> np.ndarray:
     This is quite useful for debugging, when the agent crashed and you have the last
     board state as a string.
     """
-    boardList = []
-    for row in pp_board:
-        rowList = []
-        for col in row:
-            if col not in [" ", "[", "]"]:
-                rowList.append(BoardPiece(int(col)))
-        boardList.insert(0, rowList)
+    rowList = pp_board.split("\n")[1:7]
 
-    return np.array(boardList)
+    board = np.empty((0, 7), int)
+    for row in rowList:
+        tempRowList = [[]]
+        for idx, col in enumerate(row):
+            if idx < 7:
+                piece = row[idx * 2 + 1]
+                if piece == "O":
+                    tempRowList[0].append(2)
+                elif piece == "X":
+                    tempRowList[0].append(1)
+                else:
+                    tempRowList[0].append(0)
+                print(tempRowList[0])
+                print('Board: ' + str(board))
+
+        print(board.shape)
+        board = np.append(board, np.array(tempRowList), axis=0)
+
+    return np.flip(board, axis=0)
 
 
 def apply_player_action(
@@ -118,14 +130,16 @@ def connected_four(
     """
     listOfRowsAndCols = []
     lengthOfStreak = 0
-    for row in board:
-        listOfRowsAndCols.append(row)
+    flippedBoard = np.fliplr(board)
 
-    for x in range(7):
+    for x in range(6):
+        listOfRowsAndCols.append(board[x, :])
         listOfRowsAndCols.append(board[:, x])
         listOfRowsAndCols.append(np.diag(board, x))
-        if x <= 5:
-            listOfRowsAndCols.append(np.diag(board, -x))
+        listOfRowsAndCols.append(np.diag(flippedBoard, x))
+        listOfRowsAndCols.append(np.diag(board, (-x - 1)))
+        listOfRowsAndCols.append(np.diag(flippedBoard, (-x - 1)))
+    listOfRowsAndCols.append(board[:, 6])
 
     for rowList in listOfRowsAndCols:
         for col in rowList:
