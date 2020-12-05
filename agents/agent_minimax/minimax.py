@@ -1,5 +1,6 @@
 import numpy as np
-from agents.common import BoardPiece, PLAYER1, PLAYER2, PlayerAction, apply_player_action, connected_four, SavedState, Optional, Tuple, NO_PLAYER
+from agents.common import BoardPiece, PLAYER1, PLAYER2, PlayerAction, apply_player_action, connected_four, SavedState, \
+    Optional, Tuple, NO_PLAYER, column_to_be_played_for_win
 
 
 def evaluate_heuristic(board: np.ndarray, action: PlayerAction, player: BoardPiece) -> int:
@@ -138,7 +139,18 @@ def evaluate_heuristic(board: np.ndarray, action: PlayerAction, player: BoardPie
 def generate_move_with_heuristic(
     board: np.ndarray, player: BoardPiece, saved_state: Optional[SavedState]
 ) -> Tuple[PlayerAction, Optional[SavedState]]:
-    # Choose a valid, non-full column randomly and return it as `action`
+
+    # check which Player we are and safe the other
+    if player == PLAYER1:
+        other = PLAYER2
+    else:
+        other = PLAYER1
+
+    # check if we have to block the other player so they can't win
+    criticalcolumn = column_to_be_played_for_win(board, other)
+    if criticalcolumn != -1:
+        return criticalcolumn, saved_state
+
     possible_moves = []
     for i in range(7):
         if board[5, i] == NO_PLAYER:

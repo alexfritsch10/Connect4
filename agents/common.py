@@ -151,6 +151,20 @@ def connected_four(
     return False
 
 
+def column_to_be_played_for_win(board: np.ndarray, player: BoardPiece) -> PlayerAction:
+    """
+    Returns column the input player would win the game with when played, returns -1 if it's
+    impossible with one move
+    """
+    # TODO: watch out for impossible moves?
+    for i in range(7):
+        board_cpy = board.copy()
+        if connected_four(apply_player_action(board_cpy, i, player), player):
+            return i                                                                # only returns the min column player could win with
+
+    return -1
+
+
 def check_end_state(
     board: np.ndarray, player: BoardPiece, last_action: Optional[PlayerAction] = None,
 ) -> GameState:

@@ -1,5 +1,5 @@
 import numpy as np
-from agents.common import BoardPiece, NO_PLAYER, PLAYER1, PLAYER2, pretty_print_board
+from agents.common import BoardPiece, NO_PLAYER, PLAYER1, PLAYER2, pretty_print_board, column_to_be_played_for_win
 import pytest
 
 
@@ -22,6 +22,11 @@ class Tests:
     board2[2, 4] = PLAYER1
     board2[3, 2] = PLAYER1
     board2[3, 3] = PLAYER1
+
+    board3 = np.zeros((6, 7), BoardPiece)       #possible played board
+    board3[0, 1] = PLAYER2
+    board3[0, 2] = PLAYER2
+    board3[0, 3] = PLAYER2
 
     board = np.zeros((6, 7), BoardPiece)
     board[0, 1] = BoardPiece(2)
@@ -132,6 +137,14 @@ class Tests:
         print("expected: still playing")
         assert check_end_state(self.board0, 1) == GameState.STILL_PLAYING
 
+    def test_column_to_be_played_for_win(self):
+
+        print(pretty_print_board(self.board3))
+        assert 0 == column_to_be_played_for_win(self.board3, PLAYER2)
+        self.board3[0, 0] = PLAYER1
+        print(pretty_print_board(self.board3))
+        assert 4 == column_to_be_played_for_win(self.board3, PLAYER2)
+        assert -1 == column_to_be_played_for_win(self.board3, PLAYER1)
 
     def test_generate_move_random(self):
         from agents.agent_random.random import generate_move_random
