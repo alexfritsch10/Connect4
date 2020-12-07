@@ -1,6 +1,7 @@
 import numpy as np
 from agents.common import BoardPiece, PLAYER1, PLAYER2, PlayerAction, apply_player_action, connected_four, SavedState, \
-    Optional, Tuple, NO_PLAYER, column_to_be_played_for_win
+    Optional, Tuple, NO_PLAYER, column_to_be_played_for_win, initialize_game_state
+from agents.agent_minimax.gameState import GameState
 
 
 def evaluate_heuristic(board: np.ndarray, action: PlayerAction, player: BoardPiece) -> int:
@@ -168,3 +169,77 @@ def generate_move_with_heuristic(
     action = column_to_play
     print("best heuristic: ", maxim, "column to be played: ", action)
     return action, saved_state
+
+
+class MiniMax:
+    def __init__(self, gameState: GameState, player: BoardPiece):
+        gameStatesTree = []
+        if player == 1:
+            player = 2
+        else:
+            player = 1
+        for a in range(7):
+            gameStatesTree.append(GameState(player, str(a)))
+            for b in range(7):
+                gameStatesTree.append(GameState(player, str(a) + str(b)))
+                for c in range(7):
+                    gameStatesTree.append(GameState(player, str(a) + str(b) + str(c)))
+                    for d in range(7):
+                        gameStatesTree.append(GameState(player, str(a) + str(b) + str(c) + str(d), gameState))
+        self.gameStatesTree = gameStatesTree
+
+
+def applyMiniMax(gameStatesTree: np.array, gameState: GameState, depth: int, alpha: int, beta: int, maximinzingPlayer: bool):
+    if depth == 0:
+        print(depth)
+        return gameState.computeScore()
+
+    childrenOfCurrentGameState = findChildrenOfCurrentGameState(gameStatesTree, gameState.positionID)
+    print(childrenOfCurrentGameState)
+
+    if maximinzingPlayer:
+        maxEval = -1000
+        for child in childrenOfCurrentGameState:
+            eval = applyMiniMax(gameStatesTree, child, depth-1, alpha, beta, False)
+            child.optimalScore = eval
+            maxEval = max(maxEval, eval)
+            alpha = max(alpha, eval)
+            if beta <= alpha:
+                break
+        return maxEval
+    else:
+        minEval = 1000
+        for child in childrenOfCurrentGameState:
+            eval = applyMiniMax(gameStatesTree, child, depth-1, alpha, beta, True)
+            child.optimalScore = eval
+            minEval = min(minEval, eval)
+            beta = min(beta, eval)
+            if beta <= alpha:
+                break
+        return minEval
+
+
+def findChildrenOfCurrentGameState(gameStatesTree: np.array, positionIDCurrentGameState: str) -> np.array:
+    if len(positionIDCurrentGameState) == 4:
+        return []
+
+    childrenIndexes = np.empty([1, ], dtype=int)
+    for idx, element in enumerate(gameStatesTree):
+        if len(childrenIndexes) >= 7:
+            break
+
+        if element.positionID.startswith(positionIDCurrentGameState) and len(element.positionID) == len(positionIDCurrentGameState) + 1:
+            childrenIndexes = np.append(childrenIndexes, idx)
+
+    return np.take(gameStatesTree, childrenIndexes)
+
+
+def generateMoveWithMiniMax(board: np.ndarray, player: BoardPiece, saved_state: Optional[SavedState]
+) -> Tuple[PlayerAction, Optional[SavedState]]:
+
+    gameState = GameState(player, "", board)
+    miniMax = MiniMax(gameState, player)
+    optimalScore = applyMiniMax(miniMax.gameStatesTree, gameState, 4, -1000, 1000, True)
+    relevantGameStates = findChildrenOfCurrentGameState(miniMax.gameStatesTree, "")
+    playerAction = int([gs for gs in relevantGameStates if gs.optimalScore == optimalScore][0].positionID)
+    return playerAction, saved_state

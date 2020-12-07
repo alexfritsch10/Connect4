@@ -104,7 +104,7 @@ def apply_player_action(
     board is returned. If copy is True, makes a copy of the board before modifying it.
     """
     if copy:
-        backupBoard = board
+        backupBoard = board.copy()
 
     colList = board[:, action]
     for idx, piece in enumerate(colList):
