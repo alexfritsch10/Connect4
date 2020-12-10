@@ -172,20 +172,30 @@ def generate_move_with_heuristic(
 
 
 class MiniMax:
-    def __init__(self, gameState: GameState, player: BoardPiece):
+    def __init__(self, currentBoard: np.array, player: BoardPiece):
         gameStatesTree = []
         if player == 1:
-            player = 2
+            gameStatesTree.append(GameState(1, "", currentBoard))
+            for a in range(7):
+                gameStatesTree.append(GameState(2, str(a)))
+                for b in range(7):
+                    gameStatesTree.append(GameState(1, str(a) + str(b)))
+                    for c in range(7):
+                        gameStatesTree.append(GameState(2, str(a) + str(b) + str(c)))
+                        for d in range(7):
+                            gameStatesTree.append(GameState(1, str(a) + str(b) + str(c) + str(d), currentBoard))
+
         else:
-            player = 1
-        for a in range(7):
-            gameStatesTree.append(GameState(player, str(a)))
-            for b in range(7):
-                gameStatesTree.append(GameState(player, str(a) + str(b)))
-                for c in range(7):
-                    gameStatesTree.append(GameState(player, str(a) + str(b) + str(c)))
-                    for d in range(7):
-                        gameStatesTree.append(GameState(player, str(a) + str(b) + str(c) + str(d), gameState))
+            gameStatesTree.append(GameState(2, "", currentBoard))
+            for a in range(7):
+                gameStatesTree.append(GameState(1, str(a)))
+                for b in range(7):
+                    gameStatesTree.append(GameState(2, str(a) + str(b)))
+                    for c in range(7):
+                        gameStatesTree.append(GameState(1, str(a) + str(b) + str(c)))
+                        for d in range(7):
+                            gameStatesTree.append(GameState(2, str(a) + str(b) + str(c) + str(d), currentBoard))
+
         self.gameStatesTree = gameStatesTree
 
 
@@ -237,9 +247,11 @@ def findChildrenOfCurrentGameState(gameStatesTree: np.array, positionIDCurrentGa
 def generateMoveWithMiniMax(board: np.ndarray, player: BoardPiece, saved_state: Optional[SavedState]
 ) -> Tuple[PlayerAction, Optional[SavedState]]:
 
-    gameState = GameState(player, "", board)
-    miniMax = MiniMax(gameState, player)
-    optimalScore = applyMiniMax(miniMax.gameStatesTree, gameState, 4, -1000, 1000, True)
+    miniMax = MiniMax(board, player)
+    optimalScore = applyMiniMax(miniMax.gameStatesTree, miniMax.gameStatesTree[0], 4, -1000, 1000, True)
+
     relevantGameStates = findChildrenOfCurrentGameState(miniMax.gameStatesTree, "")
+
     playerAction = int([gs for gs in relevantGameStates if gs.optimalScore == optimalScore][0].positionID)
+
     return playerAction, saved_state
