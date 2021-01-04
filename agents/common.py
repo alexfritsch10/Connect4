@@ -180,3 +180,22 @@ def check_end_state(
     else:
         return GameState.STILL_PLAYING
 
+
+def other_player(player: BoardPiece) -> BoardPiece:
+    """
+    for switching players. Checks which player is given and returns other
+    """
+    if player == PLAYER1:
+        return PLAYER2
+    elif player == PLAYER2:
+        return PLAYER1
+
+
+def move_is_possible(board: np.ndarray, action: PlayerAction) -> bool:
+    """
+    returns True if column is not full yet and False if it is
+    """
+    if board[5, action] == 0:
+        return True
+    else:
+        return False

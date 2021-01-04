@@ -2,7 +2,8 @@ import numpy as np
 from typing import Optional, Callable
 from agents.common import PlayerAction, BoardPiece, SavedState, GenMove
 from agents.agent_random.random import generate_move_random
-from agents.agent_minimax.minimax import generate_move_with_heuristic, generateMoveWithMiniMax
+from agents.agent_minimax.minimax import generateMoveWithMiniMax
+from agents.agent_minimax.heuristic import generate_move_with_heuristic
 
 
 def user_move(board: np.ndarray, _player: BoardPiece, saved_state: Optional[SavedState]):
