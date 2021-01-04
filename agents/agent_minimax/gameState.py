@@ -47,20 +47,28 @@ class GameState:
     def set_value(self):
         """
         uses heuristic to set value of node,
-        last character of positionID is the move that should be evaluated by heuristic
+        for loop to find the best column according to heuristic makes it very slow 
         """
-        if move_is_possible(self.board, int(self.positionID[-1])):
-            self.value = evaluate_heuristic(self.board, int(self.positionID[-1]), self.player)
-        else:
+        maxim = -np.Inf
+        for i in range(7):
+            if move_is_possible(self.board, i):
+                current = evaluate_heuristic(self.board, i, self.player)
+                if current > maxim:
+                    maxim = current
+                    self.value = i
+
+        if self.value is None:
             self.status = 'impossible'
+            print('no moves for Node:')
+            print(self.positionID)
 
     def buildGameStateFromID(self):
         """
-        plays 3 moves on self.board if they're possible
+        plays 4 moves on self.board if they're possible
         """
         # positionID = eg 4256 -> 1. Move: 4th Column, 2. Move: 2nd column
         player = self.player
-        for col in self.positionID[:-1]:                                    # try: only make the first 3 moves, before: complete string
+        for col in self.positionID:
             if move_is_possible(self.board, int(col)):                            # only apply possible moves
                 apply_player_action(self.board, int(col), player)
                 player = other_player(player)
