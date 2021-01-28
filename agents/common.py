@@ -165,6 +165,35 @@ def column_to_be_played_for_win(board: np.ndarray, player: BoardPiece) -> Player
     return -1
 
 
+def connected_two(board: np.ndarray, player: BoardPiece) -> bool:
+    listOfRowsAndCols = []
+    lengthOfStreak = 0
+    flippedBoard = np.fliplr(board)
+
+    for x in range(6):
+        listOfRowsAndCols.append(board[x, :])
+        listOfRowsAndCols.append(board[:, x])
+        listOfRowsAndCols.append(np.diag(board, x))
+        listOfRowsAndCols.append(np.diag(flippedBoard, x))
+        listOfRowsAndCols.append(np.diag(board, (-x - 1)))
+        listOfRowsAndCols.append(np.diag(flippedBoard, (-x - 1)))
+    listOfRowsAndCols.append(board[:, 6])
+
+    for rowList in listOfRowsAndCols:
+        for col in rowList:
+            if col == player:
+                lengthOfStreak += 1
+                if lengthOfStreak > 1:
+                    return True
+            else:
+                lengthOfStreak = 0
+        lengthOfStreak = 0
+
+    return False
+
+
+
+
 def check_end_state(
     board: np.ndarray, player: BoardPiece, last_action: Optional[PlayerAction] = None,
 ) -> GameState:

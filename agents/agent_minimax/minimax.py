@@ -15,7 +15,8 @@ def minimax(node: GameState, depth: int, alpha: int, beta: int, maximizingPlayer
     #print('Current depth: ' + str(depth) + ' for maximizingPlayer ? ' + str(maximizingPlayer))
     if depth == 0:
         node.buildGameStateFromID()
-        node.compute_score()
+        if node.status != 'impossible':
+            node.compute_score()
         return node.score
 
     #print('Maximizing Player: ' + str(maximizingPlayer))

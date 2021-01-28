@@ -1,7 +1,6 @@
 import numpy as np
 
-from agents.agent_minimax.heuristic import evaluate_heuristic
-from agents.common import BoardPiece, apply_player_action, connected_four, column_to_be_played_for_win, other_player, \
+from agents.common import BoardPiece, apply_player_action, connected_four, connected_two, column_to_be_played_for_win, other_player, \
     move_is_possible, pretty_print_board
 
 
@@ -15,7 +14,7 @@ class GameState:
         self.positionID = positionID
         self.player = player
         self.status = None                 # added self.status in case a combination of moves is impossible
-        self.score = None
+        self.score = 0
         if len(positionID) < 4:
             # print('positionID <4:', positionID)
             self.children = []
@@ -30,20 +29,36 @@ class GameState:
         uses heuristic to set score of node,
         for loop to find the best column according to heuristic makes it very slow 
         """
-        self.score = -1000
-        for i in range(7):
-            if move_is_possible(self.board, i):
-                current = evaluate_heuristic(self.board, i, self.player)
-                if current > self.score:
-                    self.score = current
 
-        #print('Set score ' + str(self.score) + ' for node ' + self.positionID + ' with board ' + pretty_print_board(self.board))
+        board_copy = self.board.copy()
 
-        if self.score == -1000:
+
+        # check for 4 in a row
+        if connected_four(board_copy, self.player):
+            self.score = 100
+        elif connected_four(board_copy, other_player(self.player)):
+            self.score = -100
+
+        # check for 3 in a row
+        elif column_to_be_played_for_win(board_copy, self.player) != -1:
+            self.score = 50
+        elif column_to_be_played_for_win(board_copy, other_player(self.player)) != -1:
+            self.score = -50
+
+        # check for 2 in a row
+        elif connected_two(board_copy, self.player):
+            self.score = 25
+            if int(self.positionID[0]) == 3:
+                self.score += 10
+            elif 2 <= int(self.positionID[2]) <= 4:
+                self.score += 5
+        elif connected_two(board_copy, other_player(self.player)):
+            self.score = -25
+
+        print('assigned score ' + str(self.score) + ' to board:')
+        print(pretty_print_board(board_copy))
+        if self.score == 0:
             self.status = 'impossible'
-            print('no possible moves for Node:')
-            print(self.positionID)
-
 
     def buildGameStateFromID(self):
         """
