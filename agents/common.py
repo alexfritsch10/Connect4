@@ -108,6 +108,7 @@ def apply_player_action(
 
     colList = board[:, action]
     for idx, piece in enumerate(colList):
+        # only applies action when row is not full
         if piece == 0:
             colList[idx] = player
             break
@@ -125,18 +126,8 @@ def connected_four(
     If desired, the last action taken (i.e. last column played) can be provided
     for potential speed optimisation.
     """
-    listOfRowsAndCols = []
+    listOfRowsAndCols = board_to_lists(board)
     lengthOfStreak = 0
-    flippedBoard = np.fliplr(board)
-
-    for x in range(6):
-        listOfRowsAndCols.append(board[x, :])
-        listOfRowsAndCols.append(board[:, x])
-        listOfRowsAndCols.append(np.diag(board, x))
-        listOfRowsAndCols.append(np.diag(flippedBoard, x))
-        listOfRowsAndCols.append(np.diag(board, (-x - 1)))
-        listOfRowsAndCols.append(np.diag(flippedBoard, (-x - 1)))
-    listOfRowsAndCols.append(board[:, 6])
 
     for rowList in listOfRowsAndCols:
         for col in rowList:
@@ -166,19 +157,9 @@ def column_to_be_played_for_win(board: np.ndarray, player: BoardPiece) -> Player
 
 
 def connected_two(board: np.ndarray, player: BoardPiece) -> bool:
-    listOfRowsAndCols = []
+    listOfRowsAndCols = board_to_lists(board)
+
     lengthOfStreak = 0
-    flippedBoard = np.fliplr(board)
-
-    for x in range(6):
-        listOfRowsAndCols.append(board[x, :])
-        listOfRowsAndCols.append(board[:, x])
-        listOfRowsAndCols.append(np.diag(board, x))
-        listOfRowsAndCols.append(np.diag(flippedBoard, x))
-        listOfRowsAndCols.append(np.diag(board, (-x - 1)))
-        listOfRowsAndCols.append(np.diag(flippedBoard, (-x - 1)))
-    listOfRowsAndCols.append(board[:, 6])
-
     for rowList in listOfRowsAndCols:
         for col in rowList:
             if col == player:
@@ -192,6 +173,20 @@ def connected_two(board: np.ndarray, player: BoardPiece) -> bool:
     return False
 
 
+def board_to_lists(board: np.ndarray) -> list:
+    listOfRowsAndCols = []
+    flippedBoard = np.fliplr(board)
+
+    for x in range(6):
+        listOfRowsAndCols.append(board[x, :])
+        listOfRowsAndCols.append(board[:, x])
+        listOfRowsAndCols.append(np.diag(board, x))
+        listOfRowsAndCols.append(np.diag(flippedBoard, x))
+        listOfRowsAndCols.append(np.diag(board, (-x - 1)))
+        listOfRowsAndCols.append(np.diag(flippedBoard, (-x - 1)))
+    listOfRowsAndCols.append(board[:, 6])
+
+    return listOfRowsAndCols
 
 
 def check_end_state(
