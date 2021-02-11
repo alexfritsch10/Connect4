@@ -3,11 +3,13 @@ import torch.nn as nn
 import numpy as np
 import matplotlib.pyplot as plt
 
+from agents.agent_supervised_ml.data_prep import clean_scores
+
 
 def linear_regression():
 
     # prepare data
-    x_numpy = np.array([[4, 6, 7, 2, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    """x_numpy = np.array([[4, 6, 7, 2, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                         [1, 6, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                         [2, 5, 4, 1, 7, 7, 3, 2, 2, 5, 5, 7, 4, 3, 6, 6, 1, 0, 0, 0, 0, 0, 0, 0],
                         [7, 1, 1, 2, 3, 6, 4, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -19,9 +21,11 @@ def linear_regression():
                         [7, 6, 3, 4, 5, 4, 1, 2, 7, 2, 5, 3, 2, 2, 2, 6, 0, 0, 0, 0, 0, 0, 0, 0]])
 
     y_numpy = np.array([[-2], [0], [2], [-2], [0], [2], [6], [4], [9], [-10]])
+    """
+    x_numpy, y_numpy = clean_scores()
     print(x_numpy.shape)
-    print(x_numpy)
-    print(y_numpy)
+    # print(x_numpy)
+    # print(y_numpy)
 
     X = torch.from_numpy(x_numpy.astype(np.float32))
     y = torch.from_numpy(y_numpy.astype(np.float32))
