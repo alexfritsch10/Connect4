@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 from agents.agent_supervised_ml.data_prep import clean_scores
 
 
-def logistic_regression():
+def logistic_regression_pytorch():
 
     # prepare data
     """x_numpy = np.array([[4, 6, 7, 2, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
