@@ -1,7 +1,10 @@
+import pickle
+
 import numpy as np
 
-from agents.agent_supervised_ml.classification import logistic_regression
-from agents.common import BoardPiece, PlayerAction, SavedState, move_is_possible, PLAYER1, PLAYER2
+from agents.agent_supervised_ml.classification import logistic_regression, multilayer_perceptron
+from agents.common import BoardPiece, PlayerAction, SavedState, move_is_possible, PLAYER1, PLAYER2, \
+    column_to_be_played_for_win, other_player
 from typing import Optional, Tuple
 import random
 
@@ -59,17 +62,49 @@ def move_to_prediction(action: PlayerAction, seq: np.ndarray) -> int:
 
 
 def generate_move_supervised(
-    board: np.ndarray, player: BoardPiece, seq: Optional[list], saved_state: Optional[SavedState]
+    board: np.ndarray, player: BoardPiece, saved_state: Optional[SavedState]
 ) -> Tuple[PlayerAction, Optional[SavedState]]:
     # Choose a valid, non-full column with supervised ml algorithm and return it as `action`
-    min = np.Inf
 
+    # if agent can win
+    win = column_to_be_played_for_win(board, player)
+    if win > -1:
+        return win, saved_state
+
+    # if agent has to block
+    block = column_to_be_played_for_win(board, other_player(player))
+    if block > -1:
+        return block, saved_state
+
+    b = np.ndarray((0, 42), int)
+    b = np.vstack([b, board.flatten()])
+
+    pickle_in = open("logistic_regression.pickle", "rb")
+    clf_log = pickle.load(pickle_in)
+    action = clf_log.predict(b)
+
+    possible_moves = []
+
+    if move_is_possible(board, action - 1):
+        return action - 1, saved_state
+    else:
+        print('prediction error')
+        if move_is_possible(board, np.int8(3)):
+            return np.int8(3), saved_state
+        else:
+            for i in range(7):
+                if move_is_possible(board, np.int8(i)):
+                    possible_moves = np.append(possible_moves, i)
+
+    action = np.random.choice(possible_moves, 1)
+    action = action.astype(np.int8)
+    """
+    min = np.Inf
     for i in range(6):
         if move_is_possible(board, i):
             current = move_to_prediction(i, seq)
             if current < min:
                 min = current
                 action = i
-
-
+    """
     return action, saved_state

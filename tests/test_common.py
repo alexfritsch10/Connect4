@@ -28,6 +28,13 @@ class Tests:
     board3[0, 2] = PLAYER2
     board3[0, 3] = PLAYER2
 
+    board4 = np.zeros((6, 7), BoardPiece)  # possible played board
+    board4[0, 1] = PLAYER2
+    board4[0, 2] = PLAYER1
+    board4[1, 1] = PLAYER2
+    board4[2, 1] = PLAYER2
+    board4[0, 3] = PLAYER2
+
     board = np.zeros((6, 7), BoardPiece)
     board[0, 1] = BoardPiece(2)
     board[0, 2] = BoardPiece(2)
@@ -145,6 +152,13 @@ class Tests:
         print(pretty_print_board(self.board3))
         assert 4 == column_to_be_played_for_win(self.board3, PLAYER2)
         assert -1 == column_to_be_played_for_win(self.board3, PLAYER1)
+
+        print(pretty_print_board(self.board4))
+        assert 1 == column_to_be_played_for_win(self.board4, PLAYER2)
+        self.board4[3, 1] = PLAYER1
+        print(pretty_print_board(self.board4))
+        assert -1 == column_to_be_played_for_win(self.board4, PLAYER2)
+        assert -1 == column_to_be_played_for_win(self.board4, PLAYER1)
 
     def test_generate_move_random(self):
         from agents.agent_random.random import generate_move_random

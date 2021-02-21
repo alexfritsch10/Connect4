@@ -32,7 +32,7 @@ def initialize_game_state() -> np.ndarray:
     """
     Returns an ndarray, shape (6, 7) and data type (dtype) BoardPiece, initialized to 0 (NO_PLAYER).
     """
-    return np.full((6,7), BoardPiece(0), dtype=BoardPiece(0))
+    return np.full((6, 7), BoardPiece(0), dtype=BoardPiece(0))
 
 
 def pretty_print_board(board: np.ndarray) -> str:
@@ -147,12 +147,11 @@ def column_to_be_played_for_win(board: np.ndarray, player: BoardPiece) -> Player
     Returns column the input player would win the game with when played, returns -1 if it's
     impossible with one move
     """
-    # TODO: watch out for impossible moves?
     for i in range(7):
         board_cpy = board.copy()
-        if connected_four(apply_player_action(board_cpy, i, player), player):
-            return i                                                                # only returns the min column player could win with
-
+        if move_is_possible(board_cpy, i):
+            if connected_four(apply_player_action(board_cpy, i, player), player):
+                return i                                                                # only returns the min column player could win with
     return -1
 
 

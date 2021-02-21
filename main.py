@@ -1,5 +1,7 @@
 import numpy as np
 from typing import Optional, Callable
+
+from agents.agent_supervised_ml.supervised import generate_move_supervised
 from agents.common import PlayerAction, BoardPiece, SavedState, GenMove
 from agents.agent_random.random import generate_move_random
 from agents.agent_minimax.minimax import generateMoveWithMiniMax
@@ -56,6 +58,7 @@ def human_vs_agent(
                 )
                 print(f"Move time: {time.time() - t0:.3f}s")
                 apply_player_action(board, action, player)
+
                 end_state = check_end_state(board, player)
                 if end_state != GameState.STILL_PLAYING:
                     print(pretty_print_board(board))
@@ -70,4 +73,4 @@ def human_vs_agent(
 
 
 if __name__ == "__main__":
-    human_vs_agent(generateMoveWithMiniMax)
+    human_vs_agent(generate_move_supervised)

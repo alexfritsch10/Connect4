@@ -1,8 +1,10 @@
 import numpy as np
 
 from agents.agent_supervised_ml.classification import linear_svm, k_nearest_neighbours, decision_tree, \
-    logistic_regression, naive_bayes, multilayer_perceptron, information_on_split_data
-from agents.agent_supervised_ml.data_prep import clean_scores
+    logistic_regression, naive_bayes, multilayer_perceptron, information_on_split_data_v1, \
+    information_on_split_data_v2
+from agents.agent_supervised_ml.data_prep import clean_scores, compute_moves, create_dataset, \
+    compute_moves_without_duplicates, eliminate_duplicates
 from agents.agent_supervised_ml.pytorch_linreg import linear_regression
 from agents.agent_supervised_ml.pytorch_logisticreg import logistic_regression_pytorch
 from agents.agent_supervised_ml.supervised import board_to_move_seq
@@ -22,6 +24,7 @@ board2[2, 3] = PLAYER1
 board2[2, 4] = PLAYER1
 board2[3, 2] = PLAYER1
 board2[3, 3] = PLAYER1
+
 
 class Tests:
 
@@ -54,8 +57,27 @@ class Tests:
         assert a.shape[1] == 41
         assert isinstance(b, np.ndarray)
 
-    def test_information_on_split_data(self):
-        information_on_split_data()
+    def test_compute_moves(self):
+        compute_moves()
+
+    def test_compute_moves_without_duplicates(self):
+        compute_moves_without_duplicates()
+
+    def test_create_dataset(self):
+        create_dataset()
+
+    def test_eliminate_duplicates(self):
+        X, y = compute_moves_without_duplicates()
+        X, y = eliminate_duplicates(X, y)
+        print('X: ', X, 'y: ', y)
+
+        assert X.shape[0] == y.shape[0]
+
+    def test_information_on_split_data_v1(self):
+        information_on_split_data_v1()
+
+    def test_information_on_split_data_v2(self):
+        information_on_split_data_v2()
 
     def test_linear_svm(self):
         linear_svm()
@@ -74,3 +96,4 @@ class Tests:
 
     def test_multilayer_perceptron(self):
         multilayer_perceptron()
+
