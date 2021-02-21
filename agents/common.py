@@ -116,6 +116,29 @@ def apply_player_action(
     board[:, action] = colList
     return board
 
+def column_to_be_played_for_win(board: np.ndarray, player: BoardPiece) -> PlayerAction:
+    """
+    Returns column the input player would win the game with when played, returns -1 if it's
+    impossible with one move
+    """
+    # TODO: watch out for impossible moves?
+    for i in range(7):
+        board_cpy = board.copy()
+        if connected_four(apply_player_action(board_cpy, PlayerAction(i), player), player):
+            # only returns the first column player could win with
+            return PlayerAction(i)
+
+    return PlayerAction(-1)
+
+
+def get_available_moves(board: np.ndarray) -> np.ndarray:
+    topRow = board[5, :]
+    idxList = np.array([])
+    for idx, col in enumerate(topRow):
+        if col == 0:
+            idxList = np.append(idx, idxList)
+    return idxList.astype(int)
+
 
 def connected_four(
     board: np.ndarray, player: BoardPiece, last_action: Optional[PlayerAction] = None,
@@ -140,20 +163,6 @@ def connected_four(
         lengthOfStreak = 0
 
     return False
-
-
-def column_to_be_played_for_win(board: np.ndarray, player: BoardPiece) -> PlayerAction:
-    """
-    Returns column the input player would win the game with when played, returns -1 if it's
-    impossible with one move
-    """
-    # TODO: watch out for impossible moves?
-    for i in range(7):
-        board_cpy = board.copy()
-        if connected_four(apply_player_action(board_cpy, i, player), player):
-            return i                                                                # only returns the min column player could win with
-
-    return -1
 
 
 def connected_two(board: np.ndarray, player: BoardPiece) -> bool:
@@ -198,8 +207,13 @@ def check_end_state(
     or is play still on-going (GameState.STILL_PLAYING)?
     """
     if connected_four(board, player):
+        print("Player " + str(player) + " won with this board:")
+        print(pretty_print_board(board))
         return GameState.IS_WIN
     elif 0 not in board:
+        print("This board ended up as a draw: ")
+        print(pretty_print_board(board))
+        print(board)
         return GameState.IS_DRAW
     else:
         return GameState.STILL_PLAYING

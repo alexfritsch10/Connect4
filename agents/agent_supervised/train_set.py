@@ -29,24 +29,43 @@ def generate_random_position_ids(n):
     f.close()
 
 
-def generate_train_set():
+def generate_train_set() -> (np.ndarray, np.ndarray):
     f = open('agents/agent_supervised/position_ids_scores.txt', 'r')
     lines = f.readlines()
-    trainSet = open('agents/agent_supervised/data_set.txt', 'a')
-    trainSet.write("player, doubleMill, number3Connect, number2Connect\n")
 
-    for line in lines:
+    inputs = np.ndarray([])
+    labels = np.zeros((6, 7, 0))
+
+    print(inputs)
+
+
+    for idx, line in enumerate(lines):
+        if idx > 20:
+            break
         line = line.strip()
         if line != "":
             lineSplit = line.split(" ")
+
             positionId = lineSplit[0]
-            score = lineSplit[1]
+            print(positionId)
             shiftedPositionId = shiftBackPositionId(positionId)
-            features = compute_features_for_position_id(shiftedPositionId)
-            trainSet.write(features + score + "\n")
+            print(shiftedPositionId)
+            inputElement = buildGameStateFromID(shiftedPositionId)
+            print(inputElement)
+            if idx == 0:
+                inputs = inputElement
+            else:
+                inputs = np.append(inputs, inputElement, axis=1)
+            print("---")
+            print(inputs)
+            print("-|-")
+            print(inputs.shape())
+
+            labelElement = lineSplit[1]
+            labels = np.append(labelElement, labels)
 
     f.close()
-    trainSet.close()
+    return inputs, labels
 
 
 def shiftBackPositionId(positionId: str) -> str:
@@ -56,55 +75,10 @@ def shiftBackPositionId(positionId: str) -> str:
     return shiftedPositionId
 
 
-def buildGameStateFromID(positionId: str) -> (int, np.ndarray):
+def buildGameStateFromID(positionId: str) -> np.ndarray:
     player = 1
     board = initialize_game_state()
     for col in positionId:
         apply_player_action(board, int(col), player)
         player = other_player(player)
-    return player, board
-
-
-def compute_features_for_position_id(positionId: str) -> str:
-    player, board = buildGameStateFromID(positionId)
-
-    features = str(player)
-    features += ","
-
-    features += str(checkForDoubleMill(board, player))
-    features += ","
-
-    features += str(numberOfStreaksWithLength(board, player, 3))
-    features += ","
-
-    features += str(numberOfStreaksWithLength(board, player, 2))
-    features += ","
-
-    return features
-
-
-def checkForDoubleMill(board: np.ndarray, player: BoardPiece) -> bool:
-    moves = np.array([])
-    for i in range(7):
-        board_cpy = board.copy()
-        if connected_four(apply_player_action(board_cpy, i, player), player):
-            moves = np.append(i, moves)
-
-    return len(moves) > 1
-
-
-def numberOfStreaksWithLength(board: np.ndarray, player: BoardPiece, requiredStreakLength: int) -> int:
-    lists = board_to_lists(board)
-    numberOfStreaks = 0
-    streakLength = 0
-    for rowList in lists:
-        for col in rowList:
-            if col == player:
-                streakLength += 1
-                if streakLength > (requiredStreakLength - 1):
-                    numberOfStreaks += 1
-            else:
-                streakLength = 0
-        streakLength = 0
-
-    return numberOfStreaks
+    return board
