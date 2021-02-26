@@ -44,8 +44,6 @@ class GameController:
             self.game.move(move, playerToMove)
             playerToMove = self.switchPlayer(playerToMove)
 
-        #print("Board History")
-        #print(self.game.getBoardHistory())
         for historyItem in self.game.getBoardHistory():
             self.trainingHistory.append((self.game.getGameState(), copy.deepcopy(historyItem)))
 

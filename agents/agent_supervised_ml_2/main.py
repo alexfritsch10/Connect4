@@ -11,20 +11,21 @@ if __name__ == "__main__":
     gameController = GameController(firstGame, redPlayer, yellowPlayer)
     print("Playing with both players with random strategies")
     gameController.playManyGames(100)
+    print("Print in main.py")
     print(gameController.getTrainingHistory()[:10])
 
     model = Model()
     model.train(gameController.getTrainingHistory())
 
-    #redNeuralPlayer = Player(RED_PLAYER_VAL, strategy='model', model=model)
-    #yellowNeuralPlayer = Player(YELLOW_PLAYER_VAL, strategy='model', model=model)
+    #redNeuralPlayer = Player(1, strategy='model', model=model)
+    #yellowNeuralPlayer = Player(2, strategy='model', model=model)
 
     #secondGame = Game()
     #gameController = GameController(secondGame, redPlayer, yellowNeuralPlayer)
     #print ("Playing with yellow player as Neural Network")
-    #gameController.simulateManyGames(1000)
+    #gameController.playManyGames(1000)
 
     #thirdGame = Game()
     #gameController = GameController(thirdGame, redNeuralPlayer, yellowPlayer)
     #print("Playing with red player as Neural Network")
-    #gameController.simulateManyGames(1000)
+    #gameController.playManyGames(1000)

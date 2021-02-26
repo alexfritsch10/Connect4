@@ -16,19 +16,13 @@ class Player:
         if self.strategy == "random":
             return availableMoves[random.randrange(0, len(availableMoves))]
         else:
-            maxValue = 0
-            bestMove = availableMoves[0]
             for availableMove in availableMoves:
                 boardCopy = copy.deepcopy(board)
                 apply_player_action(boardCopy, availableMove, self.number)
-                if self.number == 1:
-                    value = self.model.predict(boardCopy, 2)
-                else:
-                    value = self.model.predict(boardCopy, 0)
-                if value > maxValue:
-                    maxValue = value
-                    bestMove = availableMove
-            return bestMove
+                winner = self.model.predict(boardCopy)
+                if winner == self.number:
+                    return availableMove
+            return availableMoves[random.randrange(0, len(availableMoves))]
 
     def getNumber(self):
         return self.number
