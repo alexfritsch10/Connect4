@@ -72,9 +72,13 @@ def information_on_split_data_v1():
 
 def information_on_split_data_v2():
 
-    X, y = compute_moves()
-    # actually should be split in X_train, x_test, y_train, y_test (test size 20%)
+    # X, y = compute_moves()
+    X, y = compute_moves_without_duplicates()
+    X, y = eliminate_duplicates(X, y)
+    print(X.shape, y.shape)
+    # split training and test data (test size 20%)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
+
 
     print('(samples, number of features): ', X_train.shape)
 
@@ -89,18 +93,11 @@ def information_on_split_data_v2():
     count_6 = np.count_nonzero(y_train == 6)
     count_7 = np.count_nonzero(y_train == 7)
 
-    print(count_1, count_2, count_3, count_4, count_5, count_6, count_7)
-
-    # tsn-e visualization
-    tsne = TSNE(n_components=2, random_state=0)
-    x_test_2d = tsne.fit_transform(X)
-
-    # scatter plot the sample points among 5 classes:
-    markers = ('s', 'd', 'o', '^', 'v')
-    color_map = {0: 'red', 1: 'blue', 2: 'yellow', 3: 'purple', 4: 'cyan'}
-    plt.figure()
-    for idx, cl in enumerate(np.unique(X)):
-        plt.scatter(x=X[cl, 0], y=X[cl, 1], c=color_map[idx], marker=markers[idx], label=cl)
+    counts = [count_1, count_2, count_3, count_4, count_5, count_6, count_7]
+    print(counts)
+    moves = ['1', '2', '3', '4', '5', '6', '7']
+    plt.bar(moves, counts)
+    plt.show()
 
 
 def linear_svm():
@@ -109,7 +106,7 @@ def linear_svm():
     X, y = compute_moves_without_duplicates()
     # n_samples, n_features = X.shape
 
-    # actually should be split in X_train, x_test, y_train, y_test (test size 20%)
+    # split training and test data (test size 20%)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
 
     # clf_svm = svm.SVC(kernel='linear')
@@ -133,12 +130,12 @@ def linear_svm():
 def k_nearest_neighbours():
 
     X, y = clean_scores()
+    X, y = compute_moves_without_duplicates()
     # n_samples, n_features = X.shape
 
-    # actually should be split in X_train, x_test, y_train, y_test (test size 20%)
+    # split training and test data (test size 20%)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
 
-    # clf_svm = svm.SVC(kernel='linear')
     clf = KNeighborsClassifier(n_neighbors=15)
 
     clf.fit(X_train, y_train)
@@ -167,10 +164,9 @@ def decision_tree():
     X, y = compute_moves_without_duplicates()
     # n_samples, n_features = X.shape
 
-    # actually should be split in X_train, x_test, y_train, y_test (test size 20%)
+    # split training and test data (test size 20%)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
 
-    # clf_svm = svm.SVC(kernel='linear')
     clf_dec = DecisionTreeClassifier()
 
     clf_dec.fit(X_train, y_train)
@@ -193,15 +189,14 @@ def logistic_regression():
     # X, y = clean_scores()
     # X, y = compute_moves()
     X, y = compute_moves_without_duplicates()
-    # X, y = eliminate_duplicates(X, y)
+    X, y = eliminate_duplicates(X, y)
     # n_samples, n_features = X.shape
     # print('move seq: ', move_seq)
     # move_seq = move_seq.reshape(1, -1)
 
-    # actually should be split in X_train, x_test, y_train, y_test (test size 20%)
+    # split training and test data (test size 20%)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
 
-    # clf_svm = svm.SVC(kernel='linear')
     clf_log = LogisticRegression()
 
     clf_log.fit(X_train, y_train)
@@ -222,8 +217,8 @@ def logistic_regression():
     #print('score: ', score)
 
     # saving model
-    with open("logistic_regression.pickle", "wb") as f:
-        pickle.dump(clf_log, f)
+    #with open("logistic_regression.pickle", "wb") as f:
+    #    pickle.dump(clf_log, f)
 
     #return score
 
@@ -234,10 +229,9 @@ def naive_bayes():
     X, y = compute_moves_without_duplicates()
     # n_samples, n_features = X.shape
 
-    # actually should be split in X_train, x_test, y_train, y_test (test size 20%)
+    # split training and test data (test size 20%)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
 
-    # clf_svm = svm.SVC(kernel='linear')
     clf_gnb = GaussianNB()
 
     clf_gnb.fit(X_train, y_train)
@@ -260,13 +254,13 @@ def multilayer_perceptron():
     # X, y = clean_scores()
     # X, y = compute_moves()
     X, y = compute_moves_without_duplicates()
+    X, y = eliminate_duplicates(X, y)
     # n_samples, n_features = X.shape
 
-    # actually should be split in X_train, x_test, y_train, y_test (test size 20%)
+    # split training and test data (test size 20%)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
 
-    # clf_svm = svm.SVC(kernel='linear')
-    clf_MLP = MLPClassifier(hidden_layer_sizes=(150, 10), activation='logistic', random_state=1, max_iter=200)
+    clf_MLP = MLPClassifier(hidden_layer_sizes=(150, 7), activation='logistic', random_state=1, max_iter=220)
     # William and Nico Parameter:
     #clf_MLP = MLPClassifier(hidden_layer_sizes=(126*5), activation='logistic', random_state=1, max_iter=1500,
     #                        alpha=0.001, n_iter_no_change=10, learning_rate='adaptive', learning_rate_init=0.005,

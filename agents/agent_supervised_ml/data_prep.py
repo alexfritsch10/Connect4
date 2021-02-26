@@ -1,6 +1,6 @@
 import numpy as np
 
-from agents.common import initialize_game_state, apply_player_action, PLAYER1, other_player
+from agents.common import initialize_game_state, apply_player_action, PLAYER1, other_player, pretty_print_board
 
 
 def move_seq_to_board_input_vector(move_sequences: np.array) -> np.array:
@@ -118,6 +118,8 @@ def compute_moves_without_duplicates() -> (np.array, np.array):
     moves = np.ndarray((0, 1), int)         # labels
     boards = np.ndarray((0, 42), int)        # board representations as move sequences
 
+    # extra_features = np.ndarray((0, 1), int)
+
     for line in file:
         if line == '\n':
             # invalid move
@@ -125,9 +127,15 @@ def compute_moves_without_duplicates() -> (np.array, np.array):
         else:
             board_and_move = line.split(' ')  # split string into board and score (label)
             board = board_and_move[0]
+            """
+            if len(board) % 2 == 1:                                      # it's player 1 move
+                extra_feature = 1
+            elif len(board) % 2 == 0:                                    # it's player 2 move
+                extra_feature = 0
+            """
             board = list(board[:-1])
             board = np.asarray(board, int)
-            for i in range(42 - len(board)):  # 41-len(moves) 0en müssen hinzugefügt werden
+            for i in range(42 - len(board)):  # 42-len(moves) 0en müssen hinzugefügt werden
                 board = np.append(board, 0)
 
             move_scores[count % 7] = int(board_and_move[1])
@@ -140,14 +148,17 @@ def compute_moves_without_duplicates() -> (np.array, np.array):
                 boards = np.vstack([boards, board])
                 moves = np.vstack([moves, move])
 
+                # extra_features = np.vstack([extra_features, extra_feature])
+
                 move_scores = np.empty((7, 1))
 
     file.close()
 
     boards = move_seq_to_board_input_vector(boards)
-    print('X shape: ', boards.shape, 'y shape: ', moves.shape)
+    #boards = np.c_[boards, extra_features]
+    print('X shape: ', boards.shape, 'y shape: ', moves.shape)  # , 'extra feature shape: ', extra_features.shape)
     print('X.unique shape: ', np.unique(boards, axis=0).shape)
-    print('X: ', boards, 'y: ', moves)
+    print('X: ', boards, 'y: ', moves)  # , 'extra features: ', extra_features)
 
     return boards, moves
 
