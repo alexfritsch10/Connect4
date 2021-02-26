@@ -79,7 +79,7 @@ def generate_move_supervised(
     b = np.ndarray((0, 42), int)
     b = np.vstack([b, board.flatten()])
 
-    pickle_in = open("logistic_regression.pickle", "rb")
+    pickle_in = open("../../logistic_regression.pickle", "rb")
     clf_log = pickle.load(pickle_in)
     action = clf_log.predict(b)
 

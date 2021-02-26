@@ -213,6 +213,13 @@ def other_player(player: BoardPiece) -> BoardPiece:
     elif player == PLAYER2:
         return PLAYER1
 
+def get_available_moves(board: np.ndarray) -> np.ndarray:
+    topRow = board[5, :]
+    idxList = np.array([])
+    for idx, col in enumerate(topRow):
+        if col == 0:
+            idxList = np.append(idx, idxList)
+    return idxList.astype(int)
 
 def move_is_possible(board: np.ndarray, action: PlayerAction) -> bool:
     """
