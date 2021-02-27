@@ -14,7 +14,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.linear_model import LogisticRegression
 from sklearn.neural_network import MLPClassifier
 
-from agents.agent_supervised_ml.data_prep import clean_scores, compute_moves, compute_moves_without_duplicates, \
+from agents.agent_supervised_ml.data_prep import clean_scores_version1, compute_moves_v2, compute_moves_v2_without_duplicates, \
     eliminate_duplicates
 from agents.common import PlayerAction
 
@@ -26,7 +26,7 @@ labels=[-18, -17, -16, 15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, 
 
 def information_on_split_data_v1():
 
-    X, y = clean_scores()
+    X, y = clean_scores_version1()
     # actually should be split in X_train, x_test, y_train, y_test (test size 20%)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
 
@@ -73,7 +73,7 @@ def information_on_split_data_v1():
 def information_on_split_data_v2():
 
     # X, y = compute_moves()
-    X, y = compute_moves_without_duplicates()
+    X, y = compute_moves_v2_without_duplicates()
     X, y = eliminate_duplicates(X, y)
     print(X.shape, y.shape)
     # split training and test data (test size 20%)
@@ -97,17 +97,24 @@ def information_on_split_data_v2():
     print(counts)
     moves = ['1', '2', '3', '4', '5', '6', '7']
     plt.bar(moves, counts)
+    # Namimg the x and y axis
+    plt.xlabel('Moves')
+    plt.ylabel('Counts')
+    # Giving the tilte for the plot
+    plt.title('Data Distribution')
+    # Saving the plot as a 'png'
+    plt.savefig('DataDistributionPlot.png')
     plt.show()
 
 
-def linear_svm():
+def linear_svm(X_train: np.array, X_test: np.array, y_train: np.array, y_test: np.array) -> np.float:
 
     # X, y = clean_scores()
-    X, y = compute_moves_without_duplicates()
+    # X, y = compute_moves_without_duplicates()
     # n_samples, n_features = X.shape
 
     # split training and test data (test size 20%)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
+    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
 
     # clf_svm = svm.SVC(kernel='linear')
     clf_svm = svm.SVC()
@@ -126,15 +133,17 @@ def linear_svm():
     f1_sc = f1_score(y_test, y_pred, average=None)
     print('f1 score: ', f1_sc)
 
+    return acc
 
-def k_nearest_neighbours():
 
-    X, y = clean_scores()
-    X, y = compute_moves_without_duplicates()
+def k_nearest_neighbours(X_train: np.array, X_test: np.array, y_train: np.array, y_test: np.array) -> np.float:
+
+    # X, y = clean_scores()
+    # X, y = compute_moves_without_duplicates()
     # n_samples, n_features = X.shape
 
     # split training and test data (test size 20%)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
+    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
 
     clf = KNeighborsClassifier(n_neighbors=15)
 
@@ -157,15 +166,17 @@ def k_nearest_neighbours():
     f1_sc = f1_score(y_test, y_pred, average=None)
     print('f1 score: ', f1_sc)
 
+    return acc
 
-def decision_tree():
+
+def decision_tree(X_train: np.array, X_test: np.array, y_train: np.array, y_test: np.array) -> np.float:
 
     # X, y = clean_scores()
-    X, y = compute_moves_without_duplicates()
+    # X, y = compute_moves_without_duplicates()
     # n_samples, n_features = X.shape
 
     # split training and test data (test size 20%)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
+    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
 
     clf_dec = DecisionTreeClassifier()
 
@@ -183,19 +194,21 @@ def decision_tree():
     f1_sc = f1_score(y_test, y_pred, average=None)
     print('f1 score: ', f1_sc)
 
+    return acc
 
-def logistic_regression():
+
+def logistic_regression(X_train: np.array, X_test: np.array, y_train: np.array, y_test: np.array) -> np.float:
 
     # X, y = clean_scores()
     # X, y = compute_moves()
-    X, y = compute_moves_without_duplicates()
-    X, y = eliminate_duplicates(X, y)
+    # X, y = compute_moves_without_duplicates()
+    # X, y = eliminate_duplicates(X, y)
     # n_samples, n_features = X.shape
     # print('move seq: ', move_seq)
     # move_seq = move_seq.reshape(1, -1)
 
     # split training and test data (test size 20%)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
+    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
 
     clf_log = LogisticRegression()
 
@@ -220,17 +233,23 @@ def logistic_regression():
     #with open("logistic_regression.pickle", "wb") as f:
     #    pickle.dump(clf_log, f)
 
-    #return score
+    plt.bar(['1', '2', '3', '4', '5', '6', '7'], f1_sc)
+    plt.title('f1 score for linear regression')
+    # Saving the plot as a 'png'
+    plt.savefig('f1_score_linreg.png')
+    plt.show()
+
+    return acc
 
 
-def naive_bayes():
+def naive_bayes(X_train: np.array, X_test: np.array, y_train: np.array, y_test: np.array) -> np.float:
 
     # X, y = clean_scores()
-    X, y = compute_moves_without_duplicates()
+    # X, y = compute_moves_without_duplicates()
     # n_samples, n_features = X.shape
 
     # split training and test data (test size 20%)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
+    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
 
     clf_gnb = GaussianNB()
 
@@ -248,17 +267,19 @@ def naive_bayes():
     f1_sc = f1_score(y_test, y_pred, average=None)
     print('f1 score: ', f1_sc)
 
+    return acc
 
-def multilayer_perceptron():
+
+def multilayer_perceptron(X_train: np.array, X_test: np.array, y_train: np.array, y_test: np.array) -> np.float:
 
     # X, y = clean_scores()
     # X, y = compute_moves()
-    X, y = compute_moves_without_duplicates()
-    X, y = eliminate_duplicates(X, y)
+    # X, y = compute_moves_without_duplicates()
+    # X, y = eliminate_duplicates(X, y)
     # n_samples, n_features = X.shape
 
     # split training and test data (test size 20%)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
+    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
 
     clf_MLP = MLPClassifier(hidden_layer_sizes=(150, 7), activation='logistic', random_state=1, max_iter=220)
     # William and Nico Parameter:
@@ -280,4 +301,7 @@ def multilayer_perceptron():
     f1_sc = f1_score(y_test, y_pred, average=None)
     print('f1 score: ', f1_sc)
 
-    plt.scatter(y_pred, y_test)
+    # plt.bar(['1', '2', '3', '4', '5', '6', '7'], f1_sc)
+    # plt.show()
+
+    return acc
