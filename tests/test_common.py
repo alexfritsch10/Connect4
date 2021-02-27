@@ -1,5 +1,5 @@
 import numpy as np
-from agents.common import BoardPiece, NO_PLAYER, PLAYER1, PLAYER2, pretty_print_board, column_to_be_played_for_win
+from agents.common import BoardPiece, NO_PLAYER, PLAYER1, PLAYER2, pretty_print_board, column_to_be_played_for_win, PlayerAction
 import pytest
 
 
@@ -7,8 +7,8 @@ class Tests:
 
     board0 = np.zeros((6, 7), BoardPiece)       #empty board
     board1 = np.ones((6, 7), BoardPiece)        #board with X everywhere
-
     board2 = np.zeros((6, 7), BoardPiece)       #possible played board
+
     board2[0, 1] = PLAYER2
     board2[0, 2] = PLAYER2
     board2[0, 3] = PLAYER1
@@ -90,7 +90,7 @@ class Tests:
     def test_apply_player_action(self):
         from agents.common import apply_player_action, pretty_print_board
 
-        action = 5
+        action = PlayerAction(5)
         board0 = apply_player_action(self.board0.copy(), action, BoardPiece(1), False)
 
         #with pytest.raises(ValueError):
@@ -137,12 +137,12 @@ class Tests:
 
         print(pretty_print_board(self.board1))
         print("expected: player 1 won")
-        assert check_end_state(self.board1, 1) == GameState.IS_WIN
+        assert check_end_state(self.board1, PlayerAction(1)) == GameState.IS_WIN
         print("expected: player 2 draw")
-        assert check_end_state(self.board1, 2) == GameState.IS_DRAW
+        assert check_end_state(self.board1, PlayerAction(2)) == GameState.IS_DRAW
         print(pretty_print_board(self.board0))
         print("expected: still playing")
-        assert check_end_state(self.board0, 1) == GameState.STILL_PLAYING
+        assert check_end_state(self.board0, PlayerAction(1)) == GameState.STILL_PLAYING
 
     def test_column_to_be_played_for_win(self):
 
@@ -168,16 +168,16 @@ class Tests:
         assert True
 
     def test_evaluate_heuristic(self):
-        from agents.agent_minimax.minimax import evaluate_heuristic
+        from agents.agent_minimax.heuristic import evaluate_heuristic
 
         print(pretty_print_board(self.board2))
-        heuristic_c5 = evaluate_heuristic(self.board2, 5, PLAYER1)
-        heuristic_c0 = evaluate_heuristic(self.board2, 0, PLAYER1)
-        heuristic_c1 = evaluate_heuristic(self.board2, 1, PLAYER1)
-        heuristic_c2 = evaluate_heuristic(self.board2, 2, PLAYER1)
-        heuristic_c3 = evaluate_heuristic(self.board2, 3, PLAYER1)
-        heuristic_c4 = evaluate_heuristic(self.board2, 4, PLAYER1)
-        heuristic_c6 = evaluate_heuristic(self.board2, 6, PLAYER1)
+        heuristic_c5 = evaluate_heuristic(self.board2, PlayerAction(5), PLAYER1)
+        heuristic_c0 = evaluate_heuristic(self.board2, PlayerAction(0), PLAYER1)
+        heuristic_c1 = evaluate_heuristic(self.board2, PlayerAction(1), PLAYER1)
+        heuristic_c2 = evaluate_heuristic(self.board2, PlayerAction(2), PLAYER1)
+        heuristic_c3 = evaluate_heuristic(self.board2, PlayerAction(3), PLAYER1)
+        heuristic_c4 = evaluate_heuristic(self.board2, PlayerAction(4), PLAYER1)
+        heuristic_c6 = evaluate_heuristic(self.board2, PlayerAction(6), PLAYER1)
 
         print("solution column 0: ", heuristic_c0)
         print("solution column 1: ", heuristic_c1)

@@ -1,6 +1,7 @@
 import numpy as np
 from agents.common import BoardPiece, NO_PLAYER, PLAYER1, PLAYER2, pretty_print_board
 from agents.agent_minimax.gameState import GameState
+from agents.agent_minimax.minimax import move_is_possible
 
 class Tests:
 
@@ -75,16 +76,16 @@ class Tests:
         node = GameState(PLAYER1, '6421', self.board0)
         node2 = GameState(PLAYER2, '1420', self.board0)
         node.buildGameStateFromID()
-        print(pretty_print_board(node.gameState))
+        print(pretty_print_board(node.board))
         print(pretty_print_board(self.board_6421))
-        assert (node.status is None) and (node.gameState == self.board_6421).all()
+        assert node.possible and (node.board == self.board_6421).all()
         node2.buildGameStateFromID()
-        print(pretty_print_board(node2.gameState))
+        print(pretty_print_board(node2.board))
         print(pretty_print_board(self.board_1420))
-        assert (node2.status is None) and (node2.gameState == self.board_1420).all()
+        assert node2.positionID and (node2.board == self.board_1420).all()
 
         node3 = GameState(PLAYER2, '1420', self.board1)
         node3.buildGameStateFromID()
-        print(pretty_print_board(node3.gameState))
+        print(pretty_print_board(node3.board))
         print(pretty_print_board(self.board1))
-        assert node3.status == 'impossible'
+        assert node3.possible
