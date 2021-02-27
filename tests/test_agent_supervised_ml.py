@@ -2,13 +2,12 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 
 from agents.agent_supervised_ml.classification import linear_svm, k_nearest_neighbours, decision_tree, \
-    logistic_regression, naive_bayes, multilayer_perceptron, information_on_split_data_v1, \
-    information_on_split_data_v2
-from agents.agent_supervised_ml.data_prep import clean_scores_version1, compute_moves_v2, create_dataset, \
-    compute_moves_v2_without_duplicates, eliminate_duplicates
-from agents.agent_supervised_ml.pytorch_linreg import linear_regression
-from agents.agent_supervised_ml.pytorch_logisticreg import logistic_regression_pytorch
-from agents.agent_supervised_ml.supervised import board_to_move_seq
+    logistic_regression, naive_bayes, multilayer_perceptron
+from agents.agent_supervised_ml.data_prep import compute_moves_v2, \
+    compute_moves_v2_without_duplicates, eliminate_duplicates, information_on_split_data_v2, \
+    move_seq_to_board_input_vector
+from agents.agent_supervised_ml.generate_data_set import clean_scores_version1, create_dataset, \
+    generate_random_position_ids
 from agents.common import PLAYER2, BoardPiece, PLAYER1, pretty_print_board, apply_player_action, other_player
 import matplotlib.pyplot as plt
 
@@ -30,43 +29,48 @@ board2[3, 3] = PLAYER1
 
 class Tests:
 
-    def test_board_to_move_seq(self):
-        print(pretty_print_board(board2))
-        move_seq = board_to_move_seq(board2)
-        print(move_seq)
+    # TESTS FOR generate_data_set.py:
 
-        board = np.zeros((6, 7), BoardPiece)
-        player = PLAYER1
-        for i in move_seq:
-            apply_player_action(board, i-1, player)
-            player = other_player(player)
+    def test_generate_random_position_ids(self):
+        n = 1
+        generate_random_position_ids(n)
 
-        print(pretty_print_board(board))
-
-        assert board.all(board2)
-
-
-    def test_linear_regression(self):
-        linear_regression()
-
-    def test_logistic_regression_pytorch(self):
-        logistic_regression_pytorch()
-
-    def test_clean_scores(self):
+    def test_clean_scores_version1(self):
         a, b = clean_scores_version1()
 
         assert isinstance(a, np.ndarray)
         assert a.shape[1] == 41
         assert isinstance(b, np.ndarray)
 
-    def test_compute_moves(self):
-        compute_moves_v2()
-
-    def test_compute_moves_without_duplicates(self):
-        compute_moves_v2_without_duplicates()
-
     def test_create_dataset(self):
         create_dataset()
+
+
+    # TESTS FOR data_prep.py:
+
+    def test_move_seq_to_board_input_vector(self):
+
+        board_ex = np.zeros((6, 7), BoardPiece)
+        board_ex[0, 0] = PLAYER1
+        board_ex[0, 3] = PLAYER2
+        board_ex[0, 1] = PLAYER1
+        board_ex[1, 3] = PLAYER2
+        board_ex[0, 5] = PLAYER1
+        board_ex[0, 6] = PLAYER2
+
+        move_sequences = np.ndarray((0, 42), int)
+        move_sequence = np.array([1, 4, 2, 4, 5, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+        move_sequences = np.vstack([move_sequences, move_sequence])
+        boards = move_seq_to_board_input_vector(move_sequences)
+
+        assert isinstance(boards, np.ndarray)
+
+    def test_compute_moves_v2(self):
+        compute_moves_v2()
+
+    def test_compute_moves_v2_without_duplicates(self):
+        compute_moves_v2_without_duplicates()
 
     def test_eliminate_duplicates(self):
         X, y = compute_moves_v2_without_duplicates()
@@ -75,11 +79,11 @@ class Tests:
 
         assert X.shape[0] == y.shape[0]
 
-    def test_information_on_split_data_v1(self):
-        information_on_split_data_v1()
-
     def test_information_on_split_data_v2(self):
         information_on_split_data_v2()
+
+
+    # TESTS FOR classification.py:
 
     def test_linear_svm(self):
         X, y = compute_moves_v2_without_duplicates()

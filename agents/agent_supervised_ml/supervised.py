@@ -12,7 +12,7 @@ MODEL = "logistic_regression.pickle"
 
 def predict_move(board: np.ndarray) -> int:
     """
-
+    opens saved model to predict the move for the given board
     :param board:
     :return:
     """
@@ -29,6 +29,15 @@ def predict_move(board: np.ndarray) -> int:
 def generate_move_supervised(
     board: np.ndarray, player: BoardPiece, saved_state: Optional[SavedState]
 ) -> Tuple[PlayerAction, Optional[SavedState]]:
+    """
+    Choose a valid, non-full column with the prediction of a supervised ml trained model, checks for possibility to win
+    or requirement to block first, predict and check if the predicted move is actually possible, if not do middle column
+    and if this is also not possible pick a random of the possible moves.
+    :param board:
+    :param player:
+    :param saved_state:
+    :return:
+    """
     # Choose a valid, non-full column with supervised ml algorithm and return it as `action`
 
     # if agent can win
