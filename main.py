@@ -5,7 +5,6 @@ from agents.agent_supervised_ml.supervised import generate_move_supervised
 from agents.common import PlayerAction, BoardPiece, SavedState, GenMove
 from agents.agent_random.random import generate_move_random
 from agents.agent_minimax.minimax import generateMoveWithMiniMax
-from agents.agent_minimax.heuristic import generate_move_with_heuristic
 
 
 def user_move(board: np.ndarray, _player: BoardPiece, saved_state: Optional[SavedState]):
@@ -73,4 +72,4 @@ def human_vs_agent(
 
 
 if __name__ == "__main__":
-    human_vs_agent(generate_move_supervised)
+    human_vs_agent(generateMoveWithMiniMax)

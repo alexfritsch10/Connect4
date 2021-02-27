@@ -28,7 +28,7 @@ def compute_moves_v2() -> (np.array, np.array):
     :return:
     """
 
-    file = open('/Users/kira/Desktop/uni/Connect4/agents/agent_supervised_ml/scores2.txt', 'r')
+    file = open('agents/agent_supervised_ml/scores2.txt', 'r')
 
     count = 0
     move_scores = np.empty((7, 1))
@@ -81,7 +81,7 @@ def compute_moves_v2_without_duplicates() -> (np.array, np.array):
     :return:
     """
 
-    file = open('/Users/kira/Desktop/uni/Connect4/agents/agent_supervised_ml/scores2.txt', 'r')
+    file = open('agents/agent_supervised_ml/scores2.txt', 'r')
 
     count = 0
     move_scores = np.empty((7, 1))

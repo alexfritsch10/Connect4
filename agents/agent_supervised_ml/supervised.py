@@ -13,12 +13,22 @@ MODEL = "logistic_regression.pickle"
 def predict_move(board: np.ndarray) -> int:
     """
     opens saved model to predict the move for the given board
-    :param board:
-    :return:
+
+    Parameters
+    ----------
+    board : np.ndarray
+            board for which the next optimal move should be predicted
+
+    Returns
+    -------
+    The move which is optimal in the current GameState
     """
+
+    # convert board to model format
     b = np.ndarray((0, 42), int)
     b = np.vstack([b, board.flatten()])
 
+    # load model and predict optimal move
     pickle_in = open(MODEL, "rb")
     clf = pickle.load(pickle_in)
     action = clf.predict(b)
@@ -33,38 +43,50 @@ def generate_move_supervised(
     Choose a valid, non-full column with the prediction of a supervised ml trained model, checks for possibility to win
     or requirement to block first, predict and check if the predicted move is actually possible, if not do middle column
     and if this is also not possible pick a random of the possible moves.
-    :param board:
-    :param player:
-    :param saved_state:
-    :return:
-    """
-    # Choose a valid, non-full column with supervised ml algorithm and return it as `action`
 
-    # if agent can win
+    Parameters
+    ----------
+    board : np.ndarray
+            Board for which the optimal next move should be predicted
+    player: BoardPiece
+            Player for whom the optimal next move should be predicted
+    saved_state : Optional[SavedState]
+            Debugging param
+
+    Returns
+    -------
+    Optimal Move for the current board and player, and saved_state
+    """
+
+    # if player can win
     win = column_to_be_played_for_win(board, player)
     if win > -1:
         return win, saved_state
 
-    # if agent has to block
+    # if player has to block
     block = column_to_be_played_for_win(board, other_player(player))
     if block > -1:
         return block, saved_state
 
-    action = np.int8(predict_move(board))
+    action = PlayerAction(predict_move(board))
 
+    # returns prediction if move is possible
     if move_is_possible(board, action):
         return action, saved_state
+    # returns other move
     else:
         print('prediction error')
-        possible_moves = []
-        if move_is_possible(board, np.int8(3)):
-            return np.int8(3), saved_state
+        # returns middle column if possible
+        if move_is_possible(board, PlayerAction(3)):
+            return PlayerAction(3), saved_state
+        # returns random move from possible moves
         else:
+            possible_moves = []
             for i in range(7):
-                if move_is_possible(board, np.int8(i)):
+                if move_is_possible(board, PlayerAction(i)):
                     possible_moves = np.append(possible_moves, i)
 
     action = np.random.choice(possible_moves, 1)
-    action = action.astype(np.int8)
+    action = action.astype(PlayerAction)
 
     return action, saved_state
